@@ -125,18 +125,18 @@
 			<div class="container">
 				<div id="error" class="is-hidden"></div>
 				<div class="columns">
-					<div class="column is-4">
+					<div class="column is-5">
 						<label class="label">
 							<span>Dataset URL</span>
 							<input id="url" class="input" type="text">
 						</label>
 						<label class="label">
 							<span>SoQL Query</span>
-							<textarea id="query" class="textarea" rows="10"></textarea>
+							<textarea id="query" class="textarea" rows="10" data-editor="sql"></textarea>
 						</label>
 						<button id="submit" class="button is-info">Submit</button>
 					</div>
-					<div class="column is-8">
+					<div class="column is-7">
 						<div class="table-holder">
 							<div id="loading" class="bars-loader-holder is-hidden">
 								<div class="bars-loader"></div>
@@ -166,6 +166,7 @@
 		</div>
 	</section>
 
+	<script type="text/javascript" src="./ace.js"></script>
 	<script type="text/javascript" src="./main.js"></script>
 
 </body>

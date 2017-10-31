@@ -94,28 +94,72 @@ let button = document.getElementById('submit');
 let table = document.getElementById('results');
 
 function makeRequest() {
-	table.classList.add('is-hidden');
-	loading.classList.remove('is-hidden');
-	button.classList.add('is-loading');
-	danger.classList.add('is-hidden');
-	SoQLRequest({
-		url: input.value,
-		query: textarea.value
-	}).then((res) => {
-		//console.log(res);
-		table.classList.remove('is-hidden');
-		loading.classList.add('is-hidden');
-		button.classList.remove('is-loading');
-		showResultsTable(table, res);
-	}).catch((error) => {
-		console.log(error);
-		table.classList.remove('is-hidden');
-		loading.classList.add('is-hidden');
-		button.classList.remove('is-loading');
-		showError(danger, error.responseJSON || {});
-	});
+	table.innerHTML = ``;
+	let value = getEditor().getSession().getValue();
+	if (!input.value) {
+		showError(danger, {
+			code: 'Input Error',
+			message: 'No data URL given.'
+		});
+	} else if (!value) {
+		showError(danger, {
+			code: 'Input Error',
+			message: 'No SoQL query given.'
+		});
+	} else {
+		table.classList.add('is-hidden');
+		loading.classList.remove('is-hidden');
+		button.classList.add('is-loading');
+		danger.classList.add('is-hidden');
+		SoQLRequest({
+			url: input.value,
+			query: value
+		}).then((res) => {
+			//console.log(res);
+			table.classList.remove('is-hidden');
+			loading.classList.add('is-hidden');
+			button.classList.remove('is-loading');
+			showResultsTable(table, res);
+		}).catch((error) => {
+			console.log(error);
+			table.classList.remove('is-hidden');
+			loading.classList.add('is-hidden');
+			button.classList.remove('is-loading');
+			showError(danger, error.responseJSON || {});
+		});
+	}
 }
 
 button.addEventListener('click', (e) => {
 	makeRequest();
+});
+
+let editor = {};
+
+function getEditor() {
+	return editor;
+}
+
+// From: https://gist.github.com/duncansmart/5267653
+$(function () {
+	$('textarea[data-editor]').each(function () {
+		var textarea = $(this);
+		var mode = textarea.data('editor');
+		var editDiv = $('<div>', {
+			position: 'absolute',
+			width: textarea.width(),
+			height: textarea.height(),
+			'class': textarea.attr('class')
+		}).insertBefore(textarea);
+		textarea[0].classList.add('is-hidden');
+		editor = ace.edit(editDiv[0]);
+		editor.renderer.setShowGutter(false);
+		editor.getSession().setValue(textarea.val());
+		editor.getSession().setMode("ace/mode/" + mode);
+		editor.setTheme("ace/theme/monokai");
+		editor.setOptions({
+			fontSize: '15px',
+			lineHeight: 1.5
+		});
+	});
 });
