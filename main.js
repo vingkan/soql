@@ -94,27 +94,40 @@ let button = document.getElementById('submit');
 let table = document.getElementById('results');
 
 function makeRequest() {
-	table.classList.add('is-hidden');
-	loading.classList.remove('is-hidden');
-	button.classList.add('is-loading');
-	danger.classList.add('is-hidden');
+	table.innerHTML = ``;
 	let value = getEditor().getSession().getValue();
-	SoQLRequest({
-		url: input.value,
-		query: value
-	}).then((res) => {
-		//console.log(res);
-		table.classList.remove('is-hidden');
-		loading.classList.add('is-hidden');
-		button.classList.remove('is-loading');
-		showResultsTable(table, res);
-	}).catch((error) => {
-		console.log(error);
-		table.classList.remove('is-hidden');
-		loading.classList.add('is-hidden');
-		button.classList.remove('is-loading');
-		showError(danger, error.responseJSON || {});
-	});
+	if (!input.value) {
+		showError(danger, {
+			code: 'Input Error',
+			message: 'No data URL given.'
+		});
+	} else if (!value) {
+		showError(danger, {
+			code: 'Input Error',
+			message: 'No SoQL query given.'
+		});
+	} else {
+		table.classList.add('is-hidden');
+		loading.classList.remove('is-hidden');
+		button.classList.add('is-loading');
+		danger.classList.add('is-hidden');
+		SoQLRequest({
+			url: input.value,
+			query: value
+		}).then((res) => {
+			//console.log(res);
+			table.classList.remove('is-hidden');
+			loading.classList.add('is-hidden');
+			button.classList.remove('is-loading');
+			showResultsTable(table, res);
+		}).catch((error) => {
+			console.log(error);
+			table.classList.remove('is-hidden');
+			loading.classList.add('is-hidden');
+			button.classList.remove('is-loading');
+			showError(danger, error.responseJSON || {});
+		});
+	}
 }
 
 button.addEventListener('click', (e) => {
@@ -144,5 +157,9 @@ $(function () {
 		editor.getSession().setValue(textarea.val());
 		editor.getSession().setMode("ace/mode/" + mode);
 		editor.setTheme("ace/theme/monokai");
+		editor.setOptions({
+			fontSize: '15px',
+			lineHeight: 1.5
+		});
 	});
 });
