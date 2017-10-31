@@ -98,9 +98,10 @@ function makeRequest() {
 	loading.classList.remove('is-hidden');
 	button.classList.add('is-loading');
 	danger.classList.add('is-hidden');
+	let value = getEditor().getSession().getValue();
 	SoQLRequest({
 		url: input.value,
-		query: textarea.value
+		query: value
 	}).then((res) => {
 		//console.log(res);
 		table.classList.remove('is-hidden');
@@ -118,4 +119,30 @@ function makeRequest() {
 
 button.addEventListener('click', (e) => {
 	makeRequest();
+});
+
+let editor = {};
+
+function getEditor() {
+	return editor;
+}
+
+// From: https://gist.github.com/duncansmart/5267653
+$(function () {
+	$('textarea[data-editor]').each(function () {
+		var textarea = $(this);
+		var mode = textarea.data('editor');
+		var editDiv = $('<div>', {
+			position: 'absolute',
+			width: textarea.width(),
+			height: textarea.height(),
+			'class': textarea.attr('class')
+		}).insertBefore(textarea);
+		textarea[0].classList.add('is-hidden');
+		editor = ace.edit(editDiv[0]);
+		editor.renderer.setShowGutter(false);
+		editor.getSession().setValue(textarea.val());
+		editor.getSession().setMode("ace/mode/" + mode);
+		editor.setTheme("ace/theme/monokai");
+	});
 });
