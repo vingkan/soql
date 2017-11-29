@@ -9,7 +9,11 @@ function get(url, query) {
 }
 
 function showResultsTable(output, data) {
-	let first = data[0];
+	// Choose the row with the most attributes to get headers from
+	let copy = JSON.parse(JSON.stringify(data))
+	let first = copy.sort((a, b) => {
+		return Object.keys(b).length - Object.keys(a).length;
+	})[0];
 	let html = ``
 	if (first) {
 		let headers = Object.keys(first);
